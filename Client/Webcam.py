@@ -1,33 +1,33 @@
 import cv2
 
-
 class WebCam():
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
-        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.output = cv2.VideoWriter('output.mp4',self.fourcc, 25.0, (640,480))
-        self.disabled = False
+        self.on = False
 
-    def start_recording(self):
+    def get_feed(self):
+        self.on = True
         while(self.cap.isOpened()):
             ret, frame = self.cap.read()
             if ret==True:
-                print(frame)
-                print()
-                self.output.write(frame)
+                self.send_stream(frame)
+                cv2.imshow("Live",frame)
 
-                # cv2.imshow('frame',frame)
-                # if cv2.waitKey(1) & 0xFF == ord('q'):
-                if self.disabled:
+                if cv2.waitKey(1) == ord('q'):
+                    self.stop_feed()
+
+                if not self.on:
                     break
             else:
                 break
 
-        # Release everything if job is finished
         self.cap.release()
-        self.output.release()
-        # cv2.destroyAllWindows()
     
-    def stop_recording(self):
-        self.disabled = True
+    def stop_feed(self):
+        self.on = False
 
+    def send_stream(self,frame):
+        return frame
+
+cam = WebCam()
+cam.get_feed()
